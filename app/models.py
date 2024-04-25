@@ -94,7 +94,7 @@ class Recipe(db.Model):
         }
     
     def update(self, **kwargs):
-        allowed_fields = {'name', 'description', "cuisine", "cookTime", "servings" "ingredients", "instructions"}
+        allowed_fields = {'name', 'description', "cuisine", "cookTime", "servings", "ingredients", "instructions"}
 
         for key,value in kwargs.items():
             if key in allowed_fields:
