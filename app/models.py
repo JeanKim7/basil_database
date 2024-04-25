@@ -58,7 +58,9 @@ class Recipe(db.Model):
     description = db.Column(db.String, nullable = False)
     cuisine = db.Column(db.String, nullable = False)
     cookTime = db.Column(db.String, nullable=False)
+    servings = db.Column(db.String, nullable=False)
     ingredients = db.Column(db.String, nullable=False)
+    instructions = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, nullable = False, default= lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author = db.relationship('User', back_populates='recipes')
@@ -88,7 +90,7 @@ class Recipe(db.Model):
         }
     
     def update(self, **kwargs):
-        allowed_fields = {'name', 'description', "cuisine", "cookTime", "ingredients"}
+        allowed_fields = {'name', 'description', "cuisine", "cookTime", "servings" "ingredients", "instructions"}
 
         for key,value in kwargs.items():
             if key in allowed_fields:

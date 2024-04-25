@@ -71,7 +71,7 @@ def create_recipe():
     if not request.is_json:
         return {'error': 'Your content-type must be applicaion/json'}
     data=request.json
-    required_fields = ['name', 'description', 'cuisine', 'cookTime', 'ingredients']
+    required_fields = ['name', 'description', 'cuisine', 'cookTime', "servings" 'ingredients', 'instructinos']
     missing_fields = []
     for field in required_fields:
         if field not in data:
@@ -83,11 +83,13 @@ def create_recipe():
     description = data.get('description')
     cuisine = data.get('cuisine')
     cookTime = data.get('cookTime')
+    servings=data.get('servings')
     ingredients=data.get('ingredients')
+    instructions=data.get('instructions')
 
     current_user=token_auth.current_user()
 
-    new_recipe = Recipe(name=name, description=description, cuisine=cuisine, cookTime=cookTime, ingredients=ingredients, user_id=current_user.id)
+    new_recipe = Recipe(name=name, description=description, cuisine=cuisine, cookTime=cookTime, servings=servings, ingredients=ingredients, instructions=instructions, user_id=current_user.id)
 
     return new_recipe.to_dict(), 201
 
