@@ -55,8 +55,6 @@ class User(db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False)
-    description = db.Column(db.String, nullable = False)
-    cuisine = db.Column(db.String, nullable = False)
     cookTime = db.Column(db.String, nullable=False)
     servings = db.Column(db.String, nullable=False)
     ingredients = db.Column(db.String, nullable=False)
@@ -81,8 +79,6 @@ class Recipe(db.Model):
         return {
             "id":self.id,
             "name": self.name,
-            "description": self.description,
-            "cuisine": self.cuisine,
             "cookTime": self.cookTime,
             "servings": self.servings,
             "ingredients": self.ingredients,
@@ -92,7 +88,7 @@ class Recipe(db.Model):
         }
     
     def update(self, **kwargs):
-        allowed_fields = {'name', 'description', "cuisine", "cookTime", "servings" "ingredients", "instructions"}
+        allowed_fields = {'name', "cookTime", "servings" "ingredients", "instructions"}
 
         for key,value in kwargs.items():
             if key in allowed_fields:
