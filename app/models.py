@@ -83,10 +83,12 @@ class Recipe(db.Model):
             "name": self.name,
             "description": self.description,
             "cuisine": self.cuisine,
+            "cookTime": self.cookTime,
+            "servings": self.servings,
+            "ingredients": self.ingredients,
+            "instructions": self.instructions,
             "dateCreated": self.date_created,
-            "user_id": self.user_id,
             'author': self.author.to_dict(),
-            'comments': [comment.to_dict() for comment in self.comments]
         }
     
     def update(self, **kwargs):

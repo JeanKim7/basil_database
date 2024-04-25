@@ -71,7 +71,7 @@ def create_recipe():
     if not request.is_json:
         return {'error': 'Your content-type must be applicaion/json'}
     data=request.json
-    required_fields = ['name', 'description', 'cuisine', 'cookTime', "servings" 'ingredients', 'instructinos']
+    required_fields = ['name', 'description', 'cuisine', 'cookTime', "servings", 'ingredients', 'instructions']
     missing_fields = []
     for field in required_fields:
         if field not in data:
