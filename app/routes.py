@@ -123,7 +123,7 @@ def delete_recipe(recipe_id):
         return {'error':'You do not have permission to delete this recipe'}, 403
     
     recipe.delete()
-    return {'success': f"'{recipe.title}' was successfully deleted"}, 200
+    return {'success': f"'{recipe.name}' was successfully deleted"}, 200
 
 @app.route('/recipes/<int:recipe_id>/comments', methods=['POST'])
 @token_auth.login_required
