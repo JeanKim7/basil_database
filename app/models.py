@@ -50,7 +50,7 @@ class User(db.Model):
         self.token=secrets.token_hex(16)
         self.token_expiration = now + timedelta(hours=1)
         self.save()
-        return {"token": self.token, "tokenExpiration":self.token_expiration}
+        return {"token": self.token, "tokenExpiration":self.token_expiration, "currentUser": self}
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
