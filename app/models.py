@@ -55,10 +55,10 @@ class User(db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False)
-    description = db.Column(db.String, nullable=True)
+    description = db.Column(db.String)
     cuisine = db.Column(db.String, nullable = False)
     cookTime = db.Column(db.String, nullable=False)
-    servings = db.Column(db.String, nullable=True)
+    servings = db.Column(db.String)
     ingredients = db.Column(db.String, nullable=False)
     instructions = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, nullable = False, default= lambda: datetime.now(timezone.utc))
