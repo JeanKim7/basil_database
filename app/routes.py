@@ -1,11 +1,8 @@
-from flask import request, render_template
+from flask import request
 from . import app, db 
 from .models import User, Recipe, Comment
 from. auth import basic_auth, token_auth
 
-@app.route("/")
-def index():
-    return render_template('index.html')
 
 @app.route('/users', methods = ['POST'])
 def create_user():
