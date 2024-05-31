@@ -65,6 +65,7 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author = db.relationship('User', back_populates='recipes')
     comments = db.relationship('Comment', back_populates='recipe')
+    ingredients=db.relationship('Ingredients', back_populates='')
 
     def __repr__(self):
         return f"<Recipe {self.id}|{self.name}>"
@@ -137,4 +138,43 @@ class Comment(db.Model):
             'recipe_id': self.recipe_id,
             'user': self.author.to_dict()
         }
+
+class Ingredients(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    quantity = db.Column(db.Integer, nullable = False)
+    unit = db.Column(db.String, nullable=False)
+    recipe_id= db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe=db.relationship('Recipe', back_populates='ingredients')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.save()
+
+    def __repr__(self):
+        return f"<Ingredient {self.id}>"
     
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def update(self, **kwargs):
+        allowed_fields = ['name', 'quantity', 'unit']
+
+        for key,value in kwargs:
+            if key in allowed_fields:
+                setattr(self, key, value)
+        self.save()
+
+    def delete (self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'quantity': self.quantity,
+            'unit': self.unit
+        }
+

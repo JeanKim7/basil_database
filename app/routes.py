@@ -84,6 +84,7 @@ def create_recipe():
     ingredients=data.get('ingredients')
     instructions=data.get('instructions')
 
+    
     current_user=token_auth.current_user()
 
     new_recipe = Recipe(name=name, description=description, cuisine=cuisine, cookTime=cookTime, servings=servings, ingredients=ingredients, instructions=instructions, user_id=current_user.id)
@@ -168,3 +169,32 @@ def delete_comment(recipe_id, comment_id):
     comment.delete()
     return {"success": f"Comment {comment_id} was successfully deleted."}
 
+@app.route('/recipes/<int:recipe_id>/ingredients', methods=['POST'])
+@token_auth.login_required
+def create_ingredient(recipe_id):
+    if not request.is_json:
+        return {'error': 'Your content-type must be applicaion/json'}
+    recipe=db.session.get(Recipe, recipe_id)
+    if recipe is None:
+        return {'error': f"Recipe {recipe_id} does not exist."}, 404
+    
+    data=request.json
+
+    required_fields = ['name', 'quantity', 'unit']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {"error": f"{','.join(missing_fields)} must be in the request body"}, 400
+    
+    name = data.get('name')
+    quantity=data.get('quantity')
+    unit = data.get('unit')
+
+    
+    current_user=token_auth.current_user()
+
+    new_recipe = Recipe(name=name, description=description, cuisine=cuisine, cookTime=cookTime, servings=servings, ingredients=ingredients, instructions=instructions, user_id=current_user.id)
+
+    return new_recipe.to_dict(), 201
