@@ -239,7 +239,7 @@ def delete_ingredient(ingredient_id):
 
 @app.route('/recipes/<int:recipe_id>/instructions', methods=['POST'])
 @token_auth.login_required
-def create_ingredient(recipe_id):
+def create_instruction(recipe_id):
     if not request.is_json:
         return {'error': 'Your content-type must be applicaion/json'}
     recipe=db.session.get(Recipe, recipe_id)
@@ -266,7 +266,7 @@ def create_ingredient(recipe_id):
     return new_instruction.to_dict(), 201
 
 @app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>')
-def get_ingredient(instruction_id):
+def get_instruction(instruction_id):
     instruction = db.session.get(Instruction, instruction_id)
     if instruction:
         return instruction.to_dict()
