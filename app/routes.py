@@ -1,6 +1,6 @@
 from flask import request
 from . import app, db 
-from .models import User, Recipe, Comment, Ingredient
+from .models import User, Recipe, Comment, Ingredient, Instruction
 from. auth import basic_auth, token_auth
 
 
@@ -238,3 +238,70 @@ def delete_ingredient(ingredient_id):
     
     ingredient.delete()
     return {'success': f"'{ingredient.name}' was successfully deleted"}, 200
+
+@app.route('/recipes/<int:recipe_id>/instructions', methods=['POST'])
+@token_auth.login_required
+def create_ingredient(recipe_id):
+    if not request.is_json:
+        return {'error': 'Your content-type must be applicaion/json'}
+    recipe=db.session.get(Recipe, recipe_id)
+    if recipe is None:
+        return {'error': f"Recipe {recipe_id} does not exist."}, 404
+    
+    data=request.json
+
+    required_fields = ['stepNumber', 'body']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {"error": f"{','.join(missing_fields)} must be in the request body"}, 400
+    
+    stepNumber = data.get('stepNumber')
+    body=data.get('body')
+    
+    current_user=token_auth.current_user()
+
+    new_instruction = Instruction(stepNumber=stepNumber, body=body, recipe_id=recipe.id)
+
+    return new_instruction.to_dict(), 201
+
+@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>')
+def get_ingredient(instruction_id):
+    instruction = db.session.get(Instruction, instruction_id)
+    if instruction:
+        return instruction.to_dict()
+    else:
+        return {'error': f"Instruction with an ID of {instruction_id} does not exist"}, 404
+
+@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=['PUT'])
+@token_auth.login_required
+def edit_instruction(instruction_id):
+    if not request.is_json:
+        return {"error": "Your content-type must be application/json"}, 400
+    instruction = db.session.get(Instruction, instruction_id)
+    if instruction is None:
+        return {"error": f"Instruction with id of {instruction_id} does not exist"}, 404
+    current_user=token_auth.current_user()
+    if current_user is not instruction.recipe.author:
+        return {'error': "This is not your recipe. You do not ahve permission to edit"}, 403
+    
+    data=request.json
+
+    instruction.update(**data)
+    return instruction.to_dict()
+
+@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=["DELETE"])
+@token_auth.login_required
+def delete_instruction(instruction_id):
+    instruction = db.session.get(Instruction, instruction_id)
+    if instruction is None:
+        return {"error": f"Instruction with id of {instruction_id} does not exist"}, 404
+    
+    current_user=token_auth.current_user()
+    if instruction.recipe.author is not current_user:
+        return {'error':'You do not have permission to delete this instruction'}, 403
+    
+    instruction.delete()
+    return {'success': f"'{instruction.name}' was successfully deleted"}, 200
