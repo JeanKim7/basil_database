@@ -1,6 +1,6 @@
 from flask import request
 from . import app, db 
-from .models import User, Recipe, Comment
+from .models import User, Recipe, Comment, Ingredient
 from. auth import basic_auth, token_auth
 
 
@@ -169,6 +169,7 @@ def delete_comment(recipe_id, comment_id):
     comment.delete()
     return {"success": f"Comment {comment_id} was successfully deleted."}
 
+
 @app.route('/recipes/<int:recipe_id>/ingredients', methods=['POST'])
 @token_auth.login_required
 def create_ingredient(recipe_id):
@@ -191,10 +192,49 @@ def create_ingredient(recipe_id):
     name = data.get('name')
     quantity=data.get('quantity')
     unit = data.get('unit')
-
     
     current_user=token_auth.current_user()
 
-    new_recipe = Recipe(name=name, description=description, cuisine=cuisine, cookTime=cookTime, servings=servings, ingredients=ingredients, instructions=instructions, user_id=current_user.id)
+    new_ingredient = Ingredient(name=name, quantity=quantity, unit=unit, recipe_id=recipe.id)
 
-    return new_recipe.to_dict(), 201
+    return new_ingredient.to_dict(), 201
+
+@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>')
+def get_ingredient(ingredient_id):
+    ingredient = db.session.get(Ingredient, ingredient_id)
+    if ingredient:
+        return ingredient.to_dict()
+    else:
+        return {'error': f"Ingredient with an ID of {ingredient_id} does not exist"}, 404
+
+@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=['PUT'])
+@token_auth.login_required
+def edit_ingredient(ingredient_id):
+    if not request.is_json:
+        return {"error": "Your content-type must be application/json"}, 400
+    ingredient = db.session.get(Ingredient, ingredient_id)
+    if ingredient is None:
+        return {"error": f"Ingredient with id of {ingredient_id} does not exist"}, 404
+    current_user=token_auth.current_user()
+    if current_user is not ingredient.recipe.author:
+        return {'error': "This is not your recipe. You do not ahve permission to edit"}, 403
+    
+    data=request.json
+
+    ingredient.update(**data)
+    return ingredient.to_dict()
+
+@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=["DELETE"])
+@token_auth.login_required
+def delete_ingredient(ingredient_id):
+    ingredient = db.session.get(Ingredient, ingredient_id)
+
+    if ingredient is None:
+        return {"error": f"Ingredient with id of {ingredient_id} does not exist"}, 404
+    
+    current_user=token_auth.current_user()
+    if ingredient.recipe.author is not current_user:
+        return {'error':'You do not have permission to delete this ingredient'}, 403
+    
+    ingredient.delete()
+    return {'success': f"'{ingredient.name}' was successfully deleted"}, 200

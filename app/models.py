@@ -65,7 +65,8 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author = db.relationship('User', back_populates='recipes')
     comments = db.relationship('Comment', back_populates='recipe')
-    ingredients=db.relationship('Ingredients', back_populates='')
+    ingredients=db.relationship('Ingredient', back_populates='recipe')
+    instructions=db.relationship('Instruction', back_populates='recipe')
 
     def __repr__(self):
         return f"<Recipe {self.id}|{self.name}>"
@@ -139,7 +140,7 @@ class Comment(db.Model):
             'user': self.author.to_dict()
         }
 
-class Ingredients(db.Model):
+class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     quantity = db.Column(db.Integer, nullable = False)
@@ -178,3 +179,39 @@ class Ingredients(db.Model):
             'unit': self.unit
         }
 
+class Instruction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    stepNumber = db.Column(db.Integer, nullable=False)
+    body = db.Column(db.String, nullable=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe = db.relationship('Recipe', back_populates = 'instructions')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.save()
+
+    def __repr__(self):
+        return f"<Instruction {self.id}>"
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, **kwargs):
+        allowed_fields = ['stepNumber', 'body']
+
+        for key,value in kwargs:
+            if key in allowed_fields:
+                setattr(self, key, value)
+        self.save()
+
+    def delete (self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'stepNumber': self.stepNumber,
+            'body': self.body,
+        }
