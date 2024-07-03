@@ -204,7 +204,7 @@ def get_ingredients(recipe_id):
         ingredients_output = []
         for ingredient in ingredients:
             ingredients_output.append(ingredient.to_dict())
-            return ingredients_output
+        return ingredients_output
     else:
         return {'error': f"Ingredients for this recipe do not exist"}, 404
 
