@@ -197,13 +197,16 @@ def create_ingredient(recipe_id):
 
     return new_ingredient.to_dict(), 201
 
-@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>')
-def get_ingredient(ingredient_id):
-    ingredient = db.session.get(Ingredient, ingredient_id)
-    if ingredient:
-        return ingredient.to_dict()
+@app.route('/recipes/<int:recipe_id>/ingredients/')
+def get_ingredients(recipe_id):
+    ingredients = db.session.execute(db.select(Ingredient).filter_by(Ingredient.recipe_id==26)).scalars().all()
+    if ingredients:
+        ingredients_output = []
+        for ingredient in ingredients:
+            ingredients_output.append(ingredient.to_dict())
+            return ingredients_output
     else:
-        return {'error': f"Ingredient with an ID of {ingredient_id} does not exist"}, 404
+        return {'error': f"Ingredient for this recipe do not exist"}, 404
 
 @app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=['PUT'])
 @token_auth.login_required
