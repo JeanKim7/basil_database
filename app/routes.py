@@ -199,14 +199,14 @@ def create_ingredient(recipe_id):
 
 @app.route('/recipes/<int:recipe_id>/ingredients/')
 def get_ingredients(recipe_id):
-    ingredients = db.session.execute(db.select(Ingredient).filter(recipe_id=recipe_id)).scalars().all()
+    ingredients = db.session.execute(db.select(Ingredient).filter_by(recipe_id=recipe_id)).scalars().all()
     if ingredients:
         ingredients_output = []
         for ingredient in ingredients:
             ingredients_output.append(ingredient.to_dict())
             return ingredients_output
     else:
-        return {'error': f"Ingredient for this recipe do not exist"}, 404
+        return {'error': f"Ingredients for this recipe do not exist"}, 404
 
 @app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=['PUT'])
 @token_auth.login_required
