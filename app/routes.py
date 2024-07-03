@@ -199,7 +199,7 @@ def create_ingredient(recipe_id):
 
 @app.route('/recipes/<int:recipe_id>/ingredients/')
 def get_ingredients(recipe_id):
-    ingredients = db.session.execute(db.select(Ingredient).filter(Ingredient.recipe_id==recipe_id)).scalars().all()
+    ingredients = db.session.execute(db.select(Ingredient).filter(recipe_id=recipe_id)).scalars().all()
     if ingredients:
         ingredients_output = []
         for ingredient in ingredients:
