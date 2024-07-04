@@ -268,13 +268,16 @@ def create_instruction(recipe_id):
 
     return new_instruction.to_dict(), 201
 
-@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>')
-def get_instruction(instruction_id):
-    instruction = db.session.get(Instruction, instruction_id)
-    if instruction:
-        return instruction.to_dict()
+@app.route('/recipes/<int:recipe_id>/instructions')
+def get_instruction(recipe_id):
+    instructions = db.session.execute(db.select(Instruction).filter_by(recipe_id=recipe_id)).scalars().all()
+    if instructions:
+        instructions_output = []
+        for instruction in instructions:
+            instructions_output.append(instruction.to_dict())
+        return instructions_output
     else:
-        return {'error': f"Instruction with an ID of {instruction_id} does not exist"}, 404
+        return {'error': f"Instructions for this recipe do not exist"}, 404
 
 @app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=['PUT'])
 @token_auth.login_required
