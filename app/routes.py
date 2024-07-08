@@ -291,7 +291,7 @@ def edit_instruction(instruction_id):
         return {"error": f"Instruction with id of {instruction_id} does not exist"}, 404
     current_user=token_auth.current_user()
     if current_user is not instruction.recipe.author:
-        return {'error': "This is not your recipe. You do not ahve permission to edit"}, 403
+        return {'error': "This is not your recipe. You do not have permission to edit"}, 403
     
     data=request.json
 
