@@ -167,6 +167,16 @@ def delete_comment(recipe_id, comment_id):
     comment.delete()
     return {"success": f"Comment {comment_id} was successfully deleted."}
 
+@app.route('/recipes/<int:recipe_id>/ingredients/')
+def get_ingredients(recipe_id):
+    ingredients = db.session.execute(db.select(Ingredient).filter_by(recipe_id=recipe_id)).scalars().all()
+    if ingredients:
+        ingredients_output = []
+        for ingredient in ingredients:
+            ingredients_output.append(ingredient.to_dict())
+        return ingredients_output
+    else:
+        return {'error': f"Ingredients for this recipe do not exist"}, 404
 
 @app.route('/recipes/<int:recipe_id>/ingredients', methods=['POST'])
 @token_auth.login_required
@@ -193,20 +203,11 @@ def create_ingredient(recipe_id):
     
     current_user=token_auth.current_user()
 
-    new_ingredient = Ingredient(name=name, quantity=quantity, unit=unit, recipe_id=recipe.id)
+    new_ingredient = Ingredient(name=name, quantity=quantity, unit=unit, recipe_id=recipe.id, user_id = current_user.id)
 
     return new_ingredient.to_dict(), 201
 
-@app.route('/recipes/<int:recipe_id>/ingredients/')
-def get_ingredients(recipe_id):
-    ingredients = db.session.execute(db.select(Ingredient).filter_by(recipe_id=recipe_id)).scalars().all()
-    if ingredients:
-        ingredients_output = []
-        for ingredient in ingredients:
-            ingredients_output.append(ingredient.to_dict())
-        return ingredients_output
-    else:
-        return {'error': f"Ingredients for this recipe do not exist"}, 404
+
 
 @app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=['PUT'])
 @token_auth.login_required
@@ -240,6 +241,17 @@ def delete_ingredient(ingredient_id):
     ingredient.delete()
     return {'success': f"'{ingredient.name}' was successfully deleted"}, 200
 
+@app.route('/recipes/<int:recipe_id>/instructions')
+def get_instruction(recipe_id):
+    instructions = db.session.execute(db.select(Instruction).filter_by(recipe_id=recipe_id)).scalars().all()
+    if instructions:
+        instructions_output = []
+        for instruction in instructions:
+            instructions_output.append(instruction.to_dict())
+        return instructions_output
+    else:
+        return {'error': f"Instructions for this recipe do not exist"}, 404
+
 @app.route('/recipes/<int:recipe_id>/instructions', methods=['POST'])
 @token_auth.login_required
 def create_instruction(recipe_id):
@@ -264,20 +276,10 @@ def create_instruction(recipe_id):
     
     current_user=token_auth.current_user()
 
-    new_instruction = Instruction(stepNumber=stepNumber, body=body, recipe_id=recipe.id)
+    new_instruction = Instruction(stepNumber=stepNumber, body=body, recipe_id=recipe.id, user_id = current_user.id)
 
     return new_instruction.to_dict(), 201
 
-@app.route('/recipes/<int:recipe_id>/instructions')
-def get_instruction(recipe_id):
-    instructions = db.session.execute(db.select(Instruction).filter_by(recipe_id=recipe_id)).scalars().all()
-    if instructions:
-        instructions_output = []
-        for instruction in instructions:
-            instructions_output.append(instruction.to_dict())
-        return instructions_output
-    else:
-        return {'error': f"Instructions for this recipe do not exist"}, 404
 
 @app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=['PUT'])
 @token_auth.login_required

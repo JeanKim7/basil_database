@@ -13,6 +13,8 @@ class User(db.Model):
     date_created=db.Column(db.DateTime, nullable=False, default = lambda: datetime.now(timezone.utc))
     recipes = db.relationship('Recipe', back_populates='author')
     comments = db.relationship('Comment', back_populates='author')
+    ingredients = db.relationship('Ingredient', back_populates = 'author')
+    instructions = db.relationship('Instruction', back_populates = 'author')
     token = db.Column(db.String, index=True, unique=True)
     token_expiration = db.Column(db.DateTime(timezone=True))
 
@@ -142,7 +144,9 @@ class Ingredient(db.Model):
     quantity = db.Column(db.Integer, nullable = False)
     unit = db.Column(db.String, nullable=False)
     recipe_id= db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe=db.relationship('Recipe', back_populates='ingredients')
+    author = db.relationship('User', back_populates='ingredients')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -172,7 +176,9 @@ class Ingredient(db.Model):
             'id': self.id,
             'name': self.name,
             'quantity': self.quantity,
-            'unit': self.unit
+            'unit': self.unit,
+            "recipe_id": self.recipe_id,
+            "user_id": self.user_id
         }
 
 class Instruction(db.Model):
@@ -180,7 +186,9 @@ class Instruction(db.Model):
     stepNumber = db.Column(db.Integer, nullable=False)
     body = db.Column(db.String, nullable=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe = db.relationship('Recipe', back_populates = 'instructions')
+    author = db.relationship('User', back_populates='instructions')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -210,4 +218,6 @@ class Instruction(db.Model):
             'id': self.id,
             'stepNumber': self.stepNumber,
             'body': self.body,
+            "recipe_id": self.recipe_id,
+            "user_id": self.user_id
         }
