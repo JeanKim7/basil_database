@@ -162,7 +162,7 @@ class Ingredient(db.Model):
     def update(self, **kwargs):
         allowed_fields = ['name', 'quantity', 'unit']
 
-        for key,value in kwargs:
+        for key,value in kwargs.items():
             if key in allowed_fields:
                 setattr(self, key, value)
         self.save()
@@ -204,7 +204,7 @@ class Instruction(db.Model):
     def update(self, **kwargs):
         allowed_fields = ['stepNumber', 'body']
 
-        for key,value in kwargs:
+        for key,value in kwargs.items():
             if key in allowed_fields:
                 setattr(self, key, value)
         self.save()
