@@ -310,4 +310,4 @@ def delete_instruction(instruction_id):
         return {'error':'You do not have permission to delete this instruction'}, 403
     
     instruction.delete()
-    return {'success': f"'{instruction.name}' was successfully deleted"}, 200
+    return {'success': f"Step '{instruction.stepNumber}' was successfully deleted"}, 200
