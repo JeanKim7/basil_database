@@ -209,7 +209,7 @@ def create_ingredient(recipe_id):
 
 
 
-@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=['PUT'])
+@app.route('/recipes/ingredients/<int:ingredient_id>', methods=['PUT'])
 @token_auth.login_required
 def edit_ingredient(ingredient_id):
     if not request.is_json:
