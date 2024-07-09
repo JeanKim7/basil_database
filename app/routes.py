@@ -226,7 +226,7 @@ def edit_ingredient(ingredient_id):
     ingredient.update(**data)
     return ingredient.to_dict()
 
-@app.route('/recipes/<int:recipe_id>/ingredients/<int:ingredient_id>', methods=["DELETE"])
+@app.route('/recipes/ingredients/<int:ingredient_id>', methods=["DELETE"])
 @token_auth.login_required
 def delete_ingredient(ingredient_id):
     ingredient = db.session.get(Ingredient, ingredient_id)
@@ -281,7 +281,7 @@ def create_instruction(recipe_id):
     return new_instruction.to_dict(), 201
 
 
-@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=['PUT'])
+@app.route('/recipes/instructions/<int:instruction_id>', methods=['PUT'])
 @token_auth.login_required
 def edit_instruction(instruction_id):
     if not request.is_json:
@@ -298,7 +298,7 @@ def edit_instruction(instruction_id):
     instruction.update(**data)
     return instruction.to_dict()
 
-@app.route('/recipes/<int:recipe_id>/instructions/<int:instruction_id>', methods=["DELETE"])
+@app.route('/recipes/instructions/<int:instruction_id>', methods=["DELETE"])
 @token_auth.login_required
 def delete_instruction(instruction_id):
     instruction = db.session.get(Instruction, instruction_id)
