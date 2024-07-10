@@ -118,6 +118,16 @@ def delete_recipe(recipe_id):
     if recipe.author is not current_user:
         return {'error':'You do not have permission to delete this recipe'}, 403
     
+    ingredients = db.session.execute(db.select(Ingredient).filter_by(recipe_id=recipe_id)).scalars().all()
+
+    instructions = db.session.execute(db.select(Instruction).filter_by(recipe_id=recipe_id)).scalars().all()
+
+    for ing in ingredients:
+        ing.delete()
+    
+    for ins in instructions:
+        ins.delete()
+
     recipe.delete()
     return {'success': f"'{recipe.name}' was successfully deleted"}, 200
 
