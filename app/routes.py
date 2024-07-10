@@ -1,6 +1,6 @@
 from flask import request
 from . import app, db 
-from .models import User, Recipe, Comment, Ingredient, Instruction
+from .models import User_, Recipe, Comment, Ingredient, Instruction
 from. auth import basic_auth, token_auth
 
 
@@ -26,12 +26,12 @@ def create_user():
     email = data.get('email')
     password = data.get('password')
 
-    check_users=db.session.execute(db.select(User).where((User.username == username) | (User.email == email))).scalars().all()
+    check_users=db.session.execute(db.select(User_).where((User_.username == username) | (User_.email == email))).scalars().all()
     if check_users:
         return {'error': 'A user with that username and/or email already exists'}, 400
 
 
-    new_user = User(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
+    new_user = User_(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
 
 
     return new_user.to_dict(), 201
