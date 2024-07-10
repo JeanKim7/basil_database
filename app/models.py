@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 
-class User(db.Model):
+class User_(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -62,8 +62,8 @@ class Recipe(db.Model):
     cookTime = db.Column(db.String, nullable=False)
     servings = db.Column(db.String)
     date_created = db.Column(db.DateTime, nullable = False, default= lambda: datetime.now(timezone.utc))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    author = db.relationship('User', back_populates='recipes')
+    user_id = db.Column(db.Integer, db.ForeignKey('user_.id'), nullable=False)
+    author = db.relationship('User_', back_populates='recipes')
     comments = db.relationship('Comment', back_populates='recipe')
     ingredients=db.relationship('Ingredient', back_populates='recipe')
     instructions=db.relationship('Instruction', back_populates='recipe')
@@ -109,10 +109,10 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String, nullable=False)
     date_created=db.Column(db.DateTime, nullable=False, default= lambda: datetime.now(timezone.utc))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable =False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_.id'), nullable =False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable = False)
     recipe = db.relationship('Recipe', back_populates='comments')
-    author = db.relationship('User', back_populates='comments')
+    author = db.relationship('User_', back_populates='comments')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -144,9 +144,9 @@ class Ingredient(db.Model):
     quantity = db.Column(db.Integer, nullable = False)
     unit = db.Column(db.String, nullable=False)
     recipe_id= db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_.id'), nullable=False)
     recipe=db.relationship('Recipe', back_populates='ingredients')
-    author = db.relationship('User', back_populates='ingredients')
+    author = db.relationship('User_', back_populates='ingredients')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -186,9 +186,9 @@ class Instruction(db.Model):
     stepNumber = db.Column(db.Integer, nullable=False)
     body = db.Column(db.String, nullable=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_.id'), nullable=False)
     recipe = db.relationship('Recipe', back_populates = 'instructions')
-    author = db.relationship('User', back_populates='instructions')
+    author = db.relationship('User_', back_populates='instructions')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

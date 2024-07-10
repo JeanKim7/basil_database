@@ -1,5 +1,5 @@
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
-from .models import User
+from .models import User_
 from . import db
 from datetime import datetime, timezone
 
@@ -9,7 +9,7 @@ token_auth = HTTPTokenAuth()
 
 @basic_auth.verify_password
 def verify(username, password):
-    user = db.session.execute(db.select(User).where(User.username==username)).scalar_one_or_none()
+    user = db.session.execute(db.select(User_).where(User_.username==username)).scalar_one_or_none()
     if user is not None and user.check_password(password):
         return user
     return None
@@ -20,7 +20,7 @@ def handle_error(status_code):
 
 @token_auth.verify_token
 def verify(token):
-    user=db.session.execute(db.select(User).where(User.token==token)).scalar_one_or_none()
+    user=db.session.execute(db.select(User_).where(User_.token==token)).scalar_one_or_none()
     if user is not None and user.token_expiration > datetime.now(timezone.utc):
         return user
     return None
