@@ -225,6 +225,7 @@ class Instruction(db.Model):
         }
     
 class Save(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     recipe_id= db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe=db.relationship('Recipe', back_populates='saves')
@@ -235,7 +236,7 @@ class Save(db.Model):
         self.save()
 
     def __repr__(self):
-        return f"<Save recipe {self.recipe_id} | user {self.user_id}>"
+        return f"<Save id {self.id}>"
     
     def save(self):
         db.session.add(self)
@@ -255,6 +256,7 @@ class Save(db.Model):
     
     def to_dict(self):
         return {
+            "id": self.id,
             "recipe_id": self.recipe_id,
             "user_id": self.user_id
         }
