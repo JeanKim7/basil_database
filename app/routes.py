@@ -335,7 +335,7 @@ def get_saves(recipe_id):
 
 @app.route('/recipes/<int:recipe_id>/save', methods=['POST'])
 @token_auth.login_required
-def save_recipe(recipe_id):
+def create_save(recipe_id):
     if not request.is_json:
         return {'error': 'Your content-type must be applicaion/json'}
     recipe=db.session.get(Recipe, recipe_id)
@@ -355,7 +355,7 @@ def save_recipe(recipe_id):
 
 @app.route('/recipes/<int:recipe_id>/save', methods=['DELETE'])
 @token_auth.login_required
-def delete_recipe(recipe_id):
+def delete_save(recipe_id):
     recipe=db.session.get(Recipe, recipe_id)
     if recipe is None:
         return {'error': f"Recipe {recipe_id} does not exist."}, 404
