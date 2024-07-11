@@ -342,9 +342,9 @@ def create_save(recipe_id):
     
     current_user=token_auth.current_user()
 
-    check_save = db.session.execute(db.select(Save).where((Save.user_id == current_user.id) and (Save.recipe_id == recipe_id)))
+    check_save = db.session.execute(db.select(Save).where((Save.user_id == current_user.id) & (Save.recipe_id == recipe_id)))
 
-    if check_save:
+    if check_save is not None:
         return {"error": "This recipe has already been saved."}, 406
     
     new_save = Save(recipe_id =recipe_id, user_id=current_user.id)

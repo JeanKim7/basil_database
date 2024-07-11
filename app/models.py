@@ -82,6 +82,8 @@ class Recipe(db.Model):
         db.session.commit()
     
     def to_dict(self):
+        saves = db.session.execute(db.select(Save).where((Save.recipe_id == self.id)))
+
         return {
             "id":self.id,
             "name": self.name,
@@ -92,7 +94,8 @@ class Recipe(db.Model):
             "dateCreated": self.date_created,
             "user_id": self.user_id,
             'author': self.author.to_dict(),
-            'comments': [comment.to_dict() for comment in self.comments]
+            'comments': [comment.to_dict() for comment in self.comments],
+            "saves": len(saves)
         }
     
     def update(self, **kwargs):
