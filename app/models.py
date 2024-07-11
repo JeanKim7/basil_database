@@ -15,6 +15,7 @@ class User(db.Model):
     comments = db.relationship('Comment', back_populates='author')
     ingredients = db.relationship('Ingredient', back_populates = 'author')
     instructions = db.relationship('Instruction', back_populates = 'author')
+    saves=db.relationship('Save', back_populates = 'author')
     token = db.Column(db.String, index=True, unique=True)
     token_expiration = db.Column(db.DateTime(timezone=True))
 
@@ -67,6 +68,7 @@ class Recipe(db.Model):
     comments = db.relationship('Comment', back_populates='recipe')
     ingredients=db.relationship('Ingredient', back_populates='recipe')
     instructions=db.relationship('Instruction', back_populates='recipe')
+    saves=db.relationship('Save', back_populates='recipe')
 
     def __repr__(self):
         return f"<Recipe {self.id}|{self.name}>"
@@ -218,6 +220,41 @@ class Instruction(db.Model):
             'id': self.id,
             'stepNumber': self.stepNumber,
             'body': self.body,
+            "recipe_id": self.recipe_id,
+            "user_id": self.user_id
+        }
+    
+class Save(db.Model):
+    recipe_id= db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe=db.relationship('Recipe', back_populates='saves')
+    author = db.relationship('User', back_populates='saves')    
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.save()
+
+    def __repr__(self):
+        return f"<Save recipe {self.recipe_id} | user {self.user_id}>"
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def update(self, **kwargs):
+        allowed_fields = ['recipe_id', 'user_id']
+
+        for key,value in kwargs.items():
+            if key in allowed_fields:
+                setattr(self, key, value)
+        self.save()
+
+    def delete (self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def to_dict(self):
+        return {
             "recipe_id": self.recipe_id,
             "user_id": self.user_id
         }

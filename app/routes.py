@@ -1,6 +1,6 @@
 from flask import request
 from . import app, db 
-from .models import User, Recipe, Comment, Ingredient, Instruction
+from .models import User, Recipe, Comment, Ingredient, Instruction, Save
 from. auth import basic_auth, token_auth
 
 
@@ -321,3 +321,53 @@ def delete_instruction(instruction_id):
     
     instruction.delete()
     return {'success': f"Step '{instruction.stepNumber}' was successfully deleted"}, 200
+
+@app.route('/recipes/<int:recipe_id>/saves')
+def get_saves(recipe_id):
+    saves = db.session.execute(db.select(Save).filter_by(recipe_id=recipe_id)).scalars().all()
+    if saves:
+        saves_output = []
+        for s in saves:
+            saves_output.append(s.to_dict())
+        return saves_output
+    else:
+        return {'error': f"This recipe has not been saved."}, 404
+
+@app.route('/recipes/<int:recipe_id>/save', methods=['POST'])
+@token_auth.login_required
+def save_recipe(recipe_id):
+    if not request.is_json:
+        return {'error': 'Your content-type must be applicaion/json'}
+    recipe=db.session.get(Recipe, recipe_id)
+    if recipe is None:
+        return {'error': f"Recipe {recipe_id} does not exist."}, 404
+    
+    current_user=token_auth.current_user()
+
+    check_save = db.session.execute(db.select(Save).where((Save.user_id == current_user.id) and (Save.recipe_id == recipe_id)))
+
+    if check_save:
+        return {"error": "This recipe has already been saved."}, 406
+    
+    new_save = Save(recipe_id =recipe_id, user_id=current_user.id)
+
+    return new_save.to_dict(), 201
+
+@app.route('/recipes/<int:recipe_id>/save', methods=['DELETE'])
+@token_auth.login_required
+def delete_recipe(recipe_id):
+    recipe=db.session.get(Recipe, recipe_id)
+    if recipe is None:
+        return {'error': f"Recipe {recipe_id} does not exist."}, 404
+    
+    current_user=token_auth.current_user()
+    check_save = db.session.execute(db.select(Save).where((Save.user_id == current_user.id) and (Save.recipe_id == recipe_id)))
+
+    if check_save is None:
+        return {'error': 'Save for this recipe does not exist'}
+    if check_save.author is not current_user:
+        return {'error':'You do not have permission to delete this save'}, 403
+    
+    check_save[0].delete()
+
+    return {'success': f"Save for recipe {recipe_id} was successfully deleted"}, 200
