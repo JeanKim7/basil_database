@@ -95,7 +95,7 @@ class Recipe(db.Model):
             "user_id": self.user_id,
             'author': self.author.to_dict(),
             'comments': [comment.to_dict() for comment in self.comments],
-            "saves": len(saves)
+            "saves": sum(1 for _ in saves)
         }
     
     def update(self, **kwargs):
